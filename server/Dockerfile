@@ -10,11 +10,11 @@ RUN apt-get update && apt-get install -y \
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Copy custom Apache config to enable .htaccess
+COPY 000-default.conf /etc/apache2/sites-available/000-default.conf
+
 # Enable Apache mod_rewrite for URL routing
 RUN a2enmod rewrite
-
-# Allow .htaccess overrides (important for our routing)
-RUN sed -i 's/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
 
 # Copy source code to web root
 COPY . /var/www/html/
