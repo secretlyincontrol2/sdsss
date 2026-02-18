@@ -1,114 +1,125 @@
-import axios from 'axios';
+import { MOCK_USERS, MOCK_PROJECTS, MOCK_NOTIFICATIONS, mockDelay } from './mockData';
 
-const API_URL = import.meta.env.VITE_API_URL || '/api';
-
-const api = axios.create({
-    baseURL: API_URL,
-    headers: { 'Content-Type': 'application/json' },
-});
-
-api.interceptors.request.use((config) => {
-    const token = localStorage.getItem('fyp_token');
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-});
-
-api.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        if (error.response?.status === 401) {
-            localStorage.removeItem('fyp_token');
-            localStorage.removeItem('fyp_user');
-            window.location.href = '/login';
-        }
-        return Promise.reject(error);
-    }
-);
+// Helper to simulate API response format
+const mockResponse = (data) => ({ data });
 
 // Auth
 export const authAPI = {
-    register: (data) => api.post('/auth/register', data),
-    login: (data) => api.post('/auth/login', data),
-    me: () => api.get('/auth/me'),
+    register: async (data) => {
+        await mockDelay();
+        return mockResponse({
+            user: { ...data, id: Math.floor(Math.random() * 1000), role: 'student' },
+            token: 'mock-token'
+        });
+    },
+    login: async (data) => {
+        await mockDelay();
+        // Check for special demo emails, otherwise default to student
+        let user = MOCK_USERS.student;
+        if (data.email.includes('prof')) user = MOCK_USERS.supervisor;
+        if (data.email.includes('admin')) user = MOCK_USERS.admin;
+
+        return mockResponse({ user, token: 'mock-token-' + user.role });
+    },
+    me: async () => {
+        // In a real app we'd decode token, here we cheat and check localStorage or return default
+        const stored = localStorage.getItem('fyp_user');
+        return mockResponse(stored ? JSON.parse(stored) : MOCK_USERS.student);
+    },
 };
 
 // Projects
 export const projectAPI = {
-    list: () => api.get('/projects'),
-    get: (id) => api.get(`/projects/${id}`),
-    create: (data) => api.post('/projects', data),
-    update: (id, data) => api.put(`/projects/${id}`, data),
-    addMember: (id, data) => api.post(`/projects/${id}/members`, data),
-    removeMember: (id, userId) => api.delete(`/projects/${id}/members/${userId}`),
+    list: async () => { await mockDelay(); return mockResponse(MOCK_PROJECTS); },
+    get: async (id) => { await mockDelay(); return mockResponse(MOCK_PROJECTS.find(p => p.id == id)); },
+    create: async (data) => { await mockDelay(); return mockResponse({ ...data, id: Date.now() }); },
+    update: async (id, data) => { await mockDelay(); return mockResponse({ ...data, id }); },
+    addMember: async () => { await mockDelay(); return mockResponse({}); },
+    removeMember: async () => { await mockDelay(); return mockResponse({}); },
 };
 
 // Proposals
 export const proposalAPI = {
-    create: (data) => api.post('/proposals', data),
-    get: (id) => api.get(`/proposals/${id}`),
-    getByProject: (projectId) => api.get(`/proposals/project/${projectId}`),
-    review: (id, data) => api.put(`/proposals/${id}/review`, data),
+    create: async () => { await mockDelay(); return mockResponse({}); },
+    get: async () => { await mockDelay(); return mockResponse({}); }, // Return empty or mock proposal
+    getByProject: async () => { await mockDelay(); return mockResponse([]); },
+    review: async () => { await mockDelay(); return mockResponse({}); },
 };
 
 // Documents
 export const documentAPI = {
-    upload: (formData) => api.post('/documents/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-    }),
-    getByProject: (projectId) => api.get(`/documents/project/${projectId}`),
-    getVersions: (docId) => api.get(`/documents/${docId}/versions`),
-    download: (docId) => `${API_URL}/documents/${docId}/download`,
-    getComments: (docId) => api.get(`/documents/${docId}/comments`),
-    addComment: (docId, data) => api.post(`/documents/${docId}/comments`, data),
+    upload: async () => { await mockDelay(); return mockResponse({ id: 1, file_path: 'mock.pdf' }); },
+    getByProject: async () => { await mockDelay(); return mockResponse([]); },
+    getVersions: async () => { await mockDelay(); return mockResponse([]); },
+    download: (id) => '#',
+    getComments: async () => { await mockDelay(); return mockResponse([]); },
+    addComment: async () => { await mockDelay(); return mockResponse({}); },
 };
 
 // Milestones
 export const milestoneAPI = {
-    create: (data) => api.post('/milestones', data),
-    getByProject: (projectId) => api.get(`/milestones/project/${projectId}`),
-    update: (id, data) => api.put(`/milestones/${id}`, data),
+    create: async () => { await mockDelay(); return mockResponse({}); },
+    getByProject: async () => { await mockDelay(); return mockResponse([]); },
+    update: async () => { await mockDelay(); return mockResponse({}); },
 };
 
 // Grades
 export const gradeAPI = {
-    create: (data) => api.post('/grades', data),
-    getByProject: (projectId) => api.get(`/grades/project/${projectId}`),
+    create: async () => { await mockDelay(); return mockResponse({}); },
+    getByProject: async () => { await mockDelay(); return mockResponse([]); },
 };
 
 // Messages
 export const messageAPI = {
-    list: () => api.get('/messages'),
-    send: (data) => api.post('/messages', data),
-    conversation: (partnerId) => api.get(`/messages/conversation/${partnerId}`),
-    markRead: (id) => api.put(`/messages/${id}/read`),
+    list: async () => { await mockDelay(); return mockResponse([]); },
+    send: async () => { await mockDelay(); return mockResponse({}); },
+    conversation: async () => { await mockDelay(); return mockResponse([]); },
+    markRead: async () => { await mockDelay(); return mockResponse({}); },
 };
 
 // Notifications
 export const notificationAPI = {
-    list: () => api.get('/notifications'),
-    markRead: (id) => api.put(`/notifications/${id}/read`),
-    markAllRead: () => api.put('/notifications/read-all'),
+    list: async () => {
+        await mockDelay();
+        return mockResponse({ notifications: MOCK_NOTIFICATIONS, unread_count: 1 });
+    },
+    markRead: async () => { await mockDelay(); return mockResponse({}); },
+    markAllRead: async () => { await mockDelay(); return mockResponse({}); },
 };
 
 // Admin
 export const adminAPI = {
-    listUsers: () => api.get('/admin/users'),
-    updateUser: (id, data) => api.put(`/admin/users/${id}`, data),
-    deleteUser: (id) => api.delete(`/admin/users/${id}`),
-    allocate: (data) => api.post('/admin/allocate', data),
-    allocate: (data) => api.post('/admin/allocate', data),
-    analytics: () => api.get('/admin/analytics'),
-    getLogs: () => api.get('/admin/logs'),
+    listUsers: async () => { await mockDelay(); return mockResponse(Object.values(MOCK_USERS)); },
+    updateUser: async () => { await mockDelay(); return mockResponse({}); },
+    deleteUser: async () => { await mockDelay(); return mockResponse({}); },
+    allocate: async () => { await mockDelay(); return mockResponse({}); },
+    analytics: async () => {
+        await mockDelay();
+        return mockResponse({
+            projects: 24,
+            students: 150,
+            supervisors: 12,
+            avg_score: 78
+        });
+    },
+    getLogs: async () => {
+        await mockDelay();
+        return mockResponse([
+            { id: 1, action: 'LOGIN', details: 'User logged in', created_at: new Date().toISOString(), user_name: 'John Doe' }
+        ]);
+    },
 };
 
 // Calendar
 export const calendarAPI = {
-    list: () => api.get('/calendar'),
-    create: (data) => api.post('/calendar', data),
-    update: (id, data) => api.put(`/calendar/${id}`, data),
-    delete: (id) => api.delete(`/calendar/${id}`),
+    list: async () => { await mockDelay(); return mockResponse([]); },
+    create: async () => { await mockDelay(); return mockResponse({}); },
+    update: async () => { await mockDelay(); return mockResponse({}); },
+    delete: async () => { await mockDelay(); return mockResponse({}); },
 };
 
-export default api;
+export default {
+    ...authAPI,
+    ...projectAPI,
+    // ... export others if needed by default import
+};

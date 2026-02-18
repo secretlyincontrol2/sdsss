@@ -33,11 +33,53 @@ export default function LoginPage() {
                         <div className="auth-logo-icon">
                             <BookOpen size={24} />
                         </div>
-                        <h2>Welcome Back</h2>
-                        <p className="text-secondary">Sign in to manage your FYP journey</p>
+                        <h2>FYP Portal</h2>
+                        <p className="text-secondary">Select a role to continue (Demo Mode)</p>
                     </div>
 
                     {error && <div className="alert alert-error">{error}</div>}
+
+                    <div className="demo-role-grid">
+                        <button
+                            className="role-card student"
+                            onClick={() => login('student@demo.com', 'demo')}
+                            disabled={loading}
+                        >
+                            <div className="role-icon">🎓</div>
+                            <div className="role-info">
+                                <h4>Student</h4>
+                                <span>Submit proposals & milestones</span>
+                            </div>
+                        </button>
+
+                        <button
+                            className="role-card supervisor"
+                            onClick={() => login('prof@demo.com', 'demo')}
+                            disabled={loading}
+                        >
+                            <div className="role-icon">👨‍🏫</div>
+                            <div className="role-info">
+                                <h4>Supervisor</h4>
+                                <span>Review & Grade projects</span>
+                            </div>
+                        </button>
+
+                        <button
+                            className="role-card admin"
+                            onClick={() => login('admin@demo.com', 'demo')}
+                            disabled={loading}
+                        >
+                            <div className="role-icon">⚙️</div>
+                            <div className="role-info">
+                                <h4>Admin</h4>
+                                <span>Manage users & system</span>
+                            </div>
+                        </button>
+                    </div>
+
+                    <div className="divider">
+                        <span>Or sign in with email</span>
+                    </div>
 
                     <form onSubmit={handleSubmit}>
                         <div className="form-group">
@@ -47,7 +89,6 @@ export default function LoginPage() {
                                 placeholder="name@babcock.edu.ng"
                                 value={form.email}
                                 onChange={e => setForm({ ...form, email: e.target.value })}
-                                required
                             />
                         </div>
                         <div className="form-group">
@@ -57,25 +98,13 @@ export default function LoginPage() {
                                 placeholder="Enter your password"
                                 value={form.password}
                                 onChange={e => setForm({ ...form, password: e.target.value })}
-                                required
                             />
-                        </div>
-
-                        <div className="flex-between mb-3">
-                            <label className="flex-center gap-1" style={{ fontSize: '0.875rem' }}>
-                                <input type="checkbox" /> Remember me
-                            </label>
-                            <Link to="#" style={{ fontSize: '0.875rem', color: 'var(--primary)' }}>Forgot password?</Link>
                         </div>
 
                         <button type="submit" className="btn btn-primary btn-block btn-lg" disabled={loading}>
                             {loading ? <span className="spinner"></span> : <><LogIn size={18} /> Sign In</>}
                         </button>
                     </form>
-
-                    <p className="text-center mt-3" style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-                        Don't have an account? <Link to="/register" style={{ fontWeight: 600 }}>Create one</Link>
-                    </p>
                 </div>
             </div>
 
