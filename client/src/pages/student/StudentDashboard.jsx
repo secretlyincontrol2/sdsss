@@ -65,7 +65,7 @@ export default function StudentDashboard() {
     return (
         <div>
             <div style={{ marginBottom: 24 }}>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 700 }}>Welcome back, {user.first_name}! 👋</h2>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 700 }}>Welcome back, {user.first_name}</h2>
                 <p style={{ color: 'var(--text-secondary)', marginTop: 4 }}>Here's your project overview</p>
             </div>
 

@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { LogIn, BookOpen } from 'lucide-react';
+import { LogIn, BookOpen, Users, Settings } from 'lucide-react';
 
 export default function LoginPage() {
     const { login } = useAuth();
@@ -9,6 +9,19 @@ export default function LoginPage() {
     const [form, setForm] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+
+    const handleDemoLogin = async (email) => {
+        setError('');
+        setLoading(true);
+        try {
+            const user = await login(email, 'demo');
+            navigate(`/${user.role}`);
+        } catch (err) {
+            setError('Login failed. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -26,59 +39,58 @@ export default function LoginPage() {
 
     return (
         <div className="auth-layout">
-            {/* Left Side - Form */}
             <div className="auth-main">
                 <div className="auth-container">
                     <div className="auth-header">
                         <div className="auth-logo-icon">
                             <BookOpen size={24} />
                         </div>
-                        <h2>FYP Portal</h2>
-                        <p className="text-secondary">Select a role to continue (Demo Mode)</p>
+                        <h2>FYP Management Portal</h2>
+                        <p className="text-secondary">Select a role to explore the system</p>
                     </div>
 
                     {error && <div className="alert alert-error">{error}</div>}
 
                     <div className="demo-role-grid">
                         <button
-                            className="role-card student"
-                            onClick={() => login('student@demo.com', 'demo')}
+                            className="role-card"
+                            onClick={() => handleDemoLogin('student@demo.com')}
                             disabled={loading}
                         >
-                            <div className="role-icon">🎓</div>
+                            <div className="role-icon"><BookOpen size={20} /></div>
                             <div className="role-info">
                                 <h4>Student</h4>
-                                <span>Submit proposals & milestones</span>
+                                <span>Submit proposals</span>
                             </div>
                         </button>
 
                         <button
-                            className="role-card supervisor"
-                            onClick={() => login('prof@demo.com', 'demo')}
+                            className="role-card"
+                            onClick={() => handleDemoLogin('prof@demo.com')}
                             disabled={loading}
                         >
-                            <div className="role-icon">👨‍🏫</div>
+                            <div className="role-icon"><Users size={20} /></div>
                             <div className="role-info">
                                 <h4>Supervisor</h4>
-                                <span>Review & Grade projects</span>
+                                <span>Review projects</span>
                             </div>
                         </button>
 
                         <button
-                            className="role-card admin"
-                            onClick={() => login('admin@demo.com', 'demo')}
+                            className="role-card"
+                            onClick={() => handleDemoLogin('admin@demo.com')}
                             disabled={loading}
                         >
-                            <div className="role-icon">⚙️</div>
+                            <div className="role-icon"><Settings size={20} /></div>
                             <div className="role-info">
                                 <h4>Admin</h4>
-                                <span>Manage users & system</span>
+                                <span>Manage system</span>
                             </div>
                         </button>
                     </div>
 
                     <div className="divider">
-                        <span>Or sign in with email</span>
+                        <span>Or sign in with credentials</span>
                     </div>
 
                     <form onSubmit={handleSubmit}>
@@ -108,19 +120,18 @@ export default function LoginPage() {
                 </div>
             </div>
 
-            {/* Right Side - Decor */}
             <div className="auth-sidebar">
-                <div className="auth-pattern"></div>
                 <div className="auth-sidebar-content">
-                    <h3 style={{ fontSize: '2rem', marginBottom: '1rem', color: 'white' }}>Academic Excellence</h3>
-                    <p style={{ opacity: 0.9, lineHeight: 1.6 }}>"The function of education is to teach one to think intensely and to think critically. Intelligence plus character - that is the goal of true education."</p>
-                    <div className="mt-4 flex gap-2" style={{ opacity: 0.7 }}>
-                        <div style={{ width: 40, height: 4, background: 'white', borderRadius: 2 }}></div>
-                        <div style={{ width: 10, height: 4, background: 'white', borderRadius: 2 }}></div>
+                    <h3 style={{ fontSize: '1.75rem', marginBottom: '1rem', color: 'white' }}>Final Year Project Portal</h3>
+                    <p style={{ opacity: 0.85, lineHeight: 1.7, fontSize: '0.95rem' }}>
+                        Streamline your final year project workflow. Submit proposals, track milestones, communicate with your supervisor, and manage deadlines - all in one place.
+                    </p>
+                    <div style={{ marginTop: '2rem', padding: '1rem', background: 'rgba(255,255,255,0.1)', borderRadius: '8px', fontSize: '0.85rem', opacity: 0.9 }}>
+                        <strong>Demo Mode</strong> - Click any role card to explore the system with sample data.
                     </div>
                 </div>
-                <div style={{ opacity: 0.6, fontSize: '0.875rem' }}>
-                    © 2026 Babcock University
+                <div style={{ opacity: 0.5, fontSize: '0.8rem' }}>
+                    Babcock University - 2026
                 </div>
             </div>
         </div>

@@ -32,7 +32,7 @@ export default function SupervisorDashboard() {
     return (
         <div>
             <div style={{ marginBottom: 24 }}>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 700 }}>Hello, Dr. {user.last_name} 👋</h2>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 700 }}>Hello, Dr. {user.last_name}</h2>
                 <p style={{ color: 'var(--text-secondary)', marginTop: 4 }}>You have {projects.length} assigned student{projects.length !== 1 ? 's' : ''}</p>
             </div>
 
