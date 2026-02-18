@@ -28,12 +28,15 @@ const navConfig = {
     ],
 };
 
+import './NotificationDropdown.css'; // Import styles
+
 export default function Layout({ children }) {
     const { user, logout } = useAuth();
     const location = useLocation();
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
+    const [showNotifications, setShowNotifications] = useState(false);
 
     useEffect(() => {
         loadNotifications();
@@ -41,13 +44,32 @@ export default function Layout({ children }) {
         return () => clearInterval(interval);
     }, []);
 
+    // Close notifications when clicking outside (simple version: close on route change)
+    useEffect(() => {
+        setShowNotifications(false);
+    }, [location.pathname]);
+
     const loadNotifications = async () => {
         try {
             const res = await notificationAPI.list();
-            setNotifications(res.data.notifications);
-            setUnreadCount(res.data.unread_count);
+            setNotifications(res.data.notifications || []);
+            setUnreadCount(res.data.unread_count || 0);
         } catch (e) {
             // silent fail
+        }
+    };
+
+    const handleMarkRead = async (id) => {
+        try {
+            // Optimistic update
+            const target = notifications.find(n => n.id === id);
+            if (target && !target.is_read) {
+                setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n));
+                setUnreadCount(prev => Math.max(0, prev - 1));
+                await notificationAPI.markRead(id);
+            }
+        } catch (e) {
+            console.error("Failed to mark read", e);
         }
     };
 
@@ -143,9 +165,41 @@ export default function Layout({ children }) {
                         <h1>{getPageTitle()}</h1>
                     </div>
                     <div className="top-bar-actions">
-                        <button className="notification-btn" title="Notifications">
+                        <button
+                            className="notification-btn"
+                            title="Notifications"
+                            onClick={() => setShowNotifications(!showNotifications)}
+                        >
                             <Bell size={20} />
                             {unreadCount > 0 && <span className="notification-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>}
+
+                            {/* Dropdown Menu */}
+                            {showNotifications && (
+                                <div className="notification-dropdown" onClick={e => e.stopPropagation()}>
+                                    <div className="notification-header">
+                                        <h4>Notifications</h4>
+                                        <button onClick={(e) => { e.stopPropagation(); setShowNotifications(false); }}>
+                                            <X size={16} />
+                                        </button>
+                                    </div>
+                                    <div className="notification-list">
+                                        {notifications.length === 0 ? (
+                                            <div className="notification-empty">No notifications yet</div>
+                                        ) : (
+                                            notifications.map(n => (
+                                                <div
+                                                    key={n.id}
+                                                    className={`notification-item ${n.is_read ? 'read' : 'unread'}`}
+                                                    onClick={() => handleMarkRead(n.id)}
+                                                >
+                                                    <p>{n.message}</p>
+                                                    <span>{new Date(n.created_at).toLocaleString()}</span>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
+                                </div>
+                            )}
                         </button>
                     </div>
                 </header>

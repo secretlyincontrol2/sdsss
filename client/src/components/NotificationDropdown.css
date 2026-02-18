@@ -1,0 +1,115 @@
+.notification-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 320px;
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    border: 1px solid var(--border-light);
+    z-index: 1000;
+    overflow: hidden;
+    margin-top: 12px;
+    animation: slideDown 0.2s ease-out;
+    transform-origin: top right;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.notification-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg);
+}
+
+.notification-header h4 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text);
+}
+
+.notification-header button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-secondary);
+    padding: 4px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notification-header button:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--danger);
+}
+
+.notification-list {
+    max-height: 360px;
+    overflow-y: auto;
+}
+
+.notification-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-light);
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-align: left;
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notification-item:hover {
+    background: var(--bg);
+}
+
+.notification-item.unread {
+    background: rgba(37, 99, 235, 0.03);
+    border-left: 3px solid var(--primary);
+}
+
+.notification-item.read {
+    opacity: 0.7;
+    background: var(--bg-card);
+}
+
+.notification-item p {
+    font-size: 0.813rem;
+    color: var(--text);
+    margin: 0;
+    line-height: 1.4;
+    font-weight: 500;
+}
+
+.notification-item span {
+    font-size: 0.688rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+.notification-empty {
+    padding: 24px;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
