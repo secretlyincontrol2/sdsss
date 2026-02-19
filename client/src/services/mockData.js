@@ -168,4 +168,42 @@ export const MOCK_DOCUMENTS = [
     }
 ];
 
+// Mock Conversations (sidebar list)
+export const MOCK_CONVERSATIONS = [
+    {
+        partner_id: 2,
+        partner_first: 'Dr.',
+        partner_last: 'Solomon',
+        body: 'Please review Chapter 2 before Friday.',
+        created_at: new Date(Date.now() - 3600000).toISOString(),
+        unread: 1
+    },
+    {
+        partner_id: 3,
+        partner_first: 'System',
+        partner_last: 'Admin',
+        body: 'Your supervisor has been assigned.',
+        created_at: new Date(Date.now() - 86400000).toISOString(),
+        unread: 0
+    }
+];
+
+// Mock Messages (per conversation thread)
+export const MOCK_MESSAGES = {
+    2: [
+        { id: 1, sender_id: 2, body: 'Hello David, I have reviewed your Chapter 1 draft. Good work so far.', created_at: new Date(Date.now() - 259200000).toISOString() },
+        { id: 2, sender_id: 1, body: 'Thank you Dr. Solomon! I will start working on the corrections you noted.', created_at: new Date(Date.now() - 258000000).toISOString() },
+        { id: 3, sender_id: 2, body: 'Great. Make sure to include at least 20 references in your literature review.', created_at: new Date(Date.now() - 172800000).toISOString() },
+        { id: 4, sender_id: 1, body: 'Noted sir. I have about 15 so far, I will add more this week.', created_at: new Date(Date.now() - 170000000).toISOString() },
+        { id: 5, sender_id: 2, body: 'Also, your problem statement needs to be more specific. Narrow it down to a particular use case.', created_at: new Date(Date.now() - 86400000).toISOString() },
+        { id: 6, sender_id: 1, body: 'Okay, I will focus it on student union elections specifically.', created_at: new Date(Date.now() - 80000000).toISOString() },
+        { id: 7, sender_id: 2, body: 'Perfect. Please review Chapter 2 before Friday.', created_at: new Date(Date.now() - 3600000).toISOString() }
+    ],
+    3: [
+        { id: 10, sender_id: 3, body: 'Welcome to the FYP Portal. Your account has been set up.', created_at: new Date(Date.now() - 604800000).toISOString() },
+        { id: 11, sender_id: 1, body: 'Thank you. When will my supervisor be assigned?', created_at: new Date(Date.now() - 600000000).toISOString() },
+        { id: 12, sender_id: 3, body: 'Your supervisor has been assigned. You are now working with Dr. Solomon.', created_at: new Date(Date.now() - 86400000).toISOString() }
+    ]
+};
+
 export const mockDelay = (ms = 400) => new Promise(resolve => setTimeout(resolve, ms));

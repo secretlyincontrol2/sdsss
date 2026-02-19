@@ -1,4 +1,4 @@
-import { MOCK_USERS, MOCK_PROJECTS, MOCK_NOTIFICATIONS, MOCK_MILESTONES, MOCK_EVENTS, MOCK_DOCUMENTS, mockDelay } from './mockData';
+import { MOCK_USERS, MOCK_PROJECTS, MOCK_NOTIFICATIONS, MOCK_MILESTONES, MOCK_EVENTS, MOCK_DOCUMENTS, MOCK_CONVERSATIONS, MOCK_MESSAGES, mockDelay } from './mockData';
 
 const mockResponse = (data) => ({ data });
 
@@ -70,9 +70,16 @@ export const gradeAPI = {
 
 // Messages
 export const messageAPI = {
-    list: async () => { await mockDelay(); return mockResponse({ messages: [] }); },
-    send: async () => { await mockDelay(); return mockResponse({}); },
-    conversation: async () => { await mockDelay(); return mockResponse({ messages: [] }); },
+    list: async () => { await mockDelay(); return mockResponse({ conversations: MOCK_CONVERSATIONS }); },
+    send: async (data) => {
+        await mockDelay();
+        const newMsg = { id: Date.now(), sender_id: 1, body: data.body, created_at: new Date().toISOString() };
+        if (MOCK_MESSAGES[data.receiver_id]) {
+            MOCK_MESSAGES[data.receiver_id].push(newMsg);
+        }
+        return mockResponse(newMsg);
+    },
+    conversation: async (partnerId) => { await mockDelay(); return mockResponse({ messages: MOCK_MESSAGES[partnerId] || [] }); },
     markRead: async () => { await mockDelay(); return mockResponse({}); },
 };
 
